@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <link rel='stylesheet' href='//cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.css' />
+    <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/4.0.0-alpha.6/js/bootstrap.js"></script>
+  </head>
+  <body class="container">
+
+  <ul class="nav nav-pills">
+    <li role="presentation" class="disabled"><a href="javascript:;" data-toggle="modal" data-target="#myModal">添加</a></li>
+  </ul>
+
+  <form action="/add" method="post">
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Modal title</h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+              <label for="exampleInputEmail1">标题</label>
+              <input type="text" name="title" class="form-control title" id="exampleInputEmail1" placeholder="title">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input type="submit" value="添加" class="btn btn-primary">
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+  </form>
+
+  <form action="/update" method="post">
+    <div class="modal fade" id="myModal2" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Modal title</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="exampleInputEmail1">标题</label>
+              <input type="hidden" id="updateIndex" name="index" />
+              <input type="text" name="title" id="updateTitle" class="form-control title" placeholder="title">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <input type="submit" value="更改" class="btn btn-primary">
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+  </form>
+  <ul class="list-group">
+    <% list.forEach(function (article,index) {%>
+      <li class="list-group-item"><%= article.title %>   <a href="/del?index=<%=index%>">删除</a>   <a href="#" data-toggle="modal" data-target="#myModal2" onclick="edit(<%= index %>)"> 更改</a></li>
+    <% })%>
+  </ul>
+  <script>
+    function edit(index) {
+      $.get('/get/'+index,function (result) {
+        $('#updateIndex')[0].value = index;
+        $('#updateTitle')[0].value = result.title;
+      })
+    }
+//      $('#myModal2')
+  </script>
+  </body>
+</html>
