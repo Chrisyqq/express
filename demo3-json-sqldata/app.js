@@ -10,8 +10,14 @@ var db =require('./db');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var session = require('express-session');
+// require png-word.
+var PW = require("png-word");
+var pw = PW(PW.GRAY);
+var r = require("random-word")("abcdefghijklmnopqrst0123456789");
 
 var app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,13 +29,16 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({
+  secret: 'keyboard cat'
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // app.use('/', index);
 // app.use('/users', users);
 
 app.get('/',function (req,res) {
-  res.render('index',{list:db.list});
+  res.render('index',{list:db.list,logined:req.session.logined});
 });
 app.post('/add',function (req, res) {
   db.add({title:req.body.title});
@@ -56,9 +65,29 @@ app.post('/update',function (req, res) {
 app.post('/login',function (req, res) {
   let loginname = req.body.loginname;
   let password = req.body.password;
-  if(loginname === 'leo' && password === '123'){
+  let vnum = req.body.vnum;
+  if(loginname === 'leo' && password === '123' && vnum === req.session.validat_num){
+    req.session.logined = true;
+    res.send('success');
+  }else{
+    res.send("error");
   }
 });
+app.get('/logout',function (req,res) {
+  req.session.logined = false;
+  res.redirect('/');
+});
+// refresh png number.
+app.get('/refresh',function(req,res){
+
+  var numtxt = req.session.validat_num = r.random(4);
+
+  pw.createPNG(numtxt,function(pngnum){
+    res.send(pngnum);
+  })
+
+});
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
